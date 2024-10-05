@@ -13,8 +13,27 @@ namespace Project1Portfolio.Controllers
         // GET: Default
         public ActionResult Index()
         {
+            List<SelectListItem> values = (from x in context.Category.ToList()
+                                           select new SelectListItem
+                                           {
+                                               Text = x.CategoryName,
+                                               Value=x.CategoryId.ToString(),
+                                           }
+                                           ).ToList();
+            ViewBag.v=values;
             return View();
         }
+
+        [HttpPost]
+        public ActionResult  Index(Message message)
+        {
+            message.SendDate = DateTime.Parse(DateTime.Now.ToShortDateString());
+            message.IsRead = false;
+            context.Message.Add(message);
+            context.SaveChanges();
+            return RedirectToAction("Index");
+        }
+
 
         public PartialViewResult PartialHead()
         {
@@ -60,9 +79,21 @@ namespace Project1Portfolio.Controllers
         
         public PartialViewResult PartialScript()
         {
-            
-
             return PartialView();
+        }
+        
+        public PartialViewResult PartialSKill()
+        {
+            var values = context.Skill.ToList();
+
+            return PartialView(values);
+        } 
+        
+        public PartialViewResult PartialSocialMedia()
+        {
+            var values = context.SocialMedia.Where(x => x.Status == true).ToList();
+
+            return PartialView(values);
         }
     }
 }
